@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+echo "Starting Terraform deploy..."
+cd "$(dirname "$0")/../terraform"
+terraform init -input=false
+terraform apply -auto-approve
+echo "Done. Run 'terraform output alb_dns' to get ALB DNS."

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+echo "Destroying Terraform resources..."
+cd "$(dirname "$0")/../terraform"
+terraform destroy -auto-approve
+echo "Destroyed."
