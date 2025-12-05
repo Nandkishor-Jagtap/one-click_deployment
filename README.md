@@ -15,6 +15,7 @@ This project implements a **one-click deployable infrastructure** using **Terraf
 
 ## 🧱 **Architecture (My Deployment)**
 
+```
 Client → ALB (public subnets) → Target Group → ASG → Private EC2 instances (no public IPs)
 ↓
 NAT Gateway (egress)
@@ -30,7 +31,7 @@ Copy code
 ### ✔️ Private ASG  
 ### ✔️ NAT for outbound internet  
 ### ✔️ NO public EC2 instances  
-
+```
 ---
 
 # 🛠️ **Components I Created**
@@ -169,7 +170,7 @@ Copy code
 ---
 
 # 📂 **Repository Structure**
-
+```
 one-click-deployment/
 │
 ├── terraform/ # All IaC code
@@ -179,8 +180,6 @@ one-click-deployment/
 │ ├── destroy.sh
 │ └── test.sh # (optional)
 └── README.md
-
-yaml
-Copy code
+```
 
 ---
