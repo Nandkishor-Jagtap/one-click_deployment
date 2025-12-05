@@ -1,218 +1,186 @@
-Architecture (My Deployment)
-Client → ALB (public subnets)
-          ↓
-      Target Group
-          ↓
-      Auto Scaling Group
-          ↓
- Private EC2 Instances (no public IPs)
-          ↓
-      NAT Gateway (egress only)
-          ↓
-      Internet Gateway
+# 🚀 One-Click Deployment – DevOps Assignment
 
+This project implements a **one-click deployable infrastructure** using **Terraform**, which provisions a complete AWS environment containing:
 
-✔ 2 public subnets
-✔ 2 private subnets
-✔ Public ALB
-✔ Private ASG
-✔ NAT for outbound internet only
-✔ No public EC2
+- VPC with **2 public** + **2 private subnets**
+- Internet Gateway + NAT Gateway
+- Public **Application Load Balancer (ALB)**
+- **Auto Scaling Group (ASG)** deployed in private subnets
+- REST API app running on private EC2 instances (no public IP)
+- Health checks on `/health`
+- One-click deploy (`terraform apply`)
+- One-click teardown (`terraform destroy`)
 
-Components I Created
-1. VPC
+---
 
-CIDR: 10.0.0.0/16
+## 🧱 **Architecture (My Deployment)**
 
-DNS hostnames enabled
+Client → ALB (public subnets) → Target Group → ASG → Private EC2 instances (no public IPs)
+↓
+NAT Gateway (egress)
+↓
+Internet Gateway
 
-2. Subnets
+yaml
+Copy code
 
-Public subnets
+### ✔️ 2 public subnets  
+### ✔️ 2 private subnets  
+### ✔️ Public ALB  
+### ✔️ Private ASG  
+### ✔️ NAT for outbound internet  
+### ✔️ NO public EC2 instances  
 
-10.0.1.0/24
+---
 
-10.0.0.0/24
+# 🛠️ **Components I Created**
 
-Private subnets
+---
 
-10.0.2.0/24
+## 1️⃣ **VPC**
+- CIDR: `10.0.0.0/16`
+- DNS hostnames: **Enabled**
 
-10.0.3.0/24
+---
 
-Screenshots verify these four subnets.
+## 2️⃣ **Subnets**
 
-3. NAT Gateway
+### **Public subnets**
+- `10.0.1.0/24`
+- `10.0.0.0/24`
 
-Placed in public subnet 10.0.0.0/24
+### **Private subnets**
+- `10.0.2.0/24`
+- `10.0.3.0/24`
 
-Allocated Elastic IP
+---
 
-Used only for private EC2 internet access
+## 3️⃣ **Internet Gateway**
+- Attached to VPC
 
-4. Route Tables
-Public Route Table
+---
 
-Default route → Internet Gateway
+## 4️⃣ **NAT Gateway**
+- Created in public subnet
+- Used by private subnets for outbound access
 
-Private Route Table
+---
 
-Default route → NAT Gateway
+## 5️⃣ **Route Tables**
 
-Both verified in screenshots.
+### **Public Route Table**
+- `0.0.0.0/0` → Internet Gateway
 
-5. Security Groups
-ALB SG
+### **Private Route Table**
+- `0.0.0.0/0` → NAT Gateway
 
-Allows HTTP (80) from anywhere
+---
 
-EC2 SG
+## 6️⃣ **Security Groups**
 
-Allows port 8080 only from ALB SG
+### **ALB SG**
+- Allows HTTP (80) from internet
 
-No SSH exposed
+### **EC2 SG**
+- Allows HTTP only from ALB security group
+- No SSH (as per best practices)
 
-6. Application Load Balancer (ALB)
+---
 
-Type: Application
+## 7️⃣ **Launch Template**
+- EC2 Amazon Linux 2
+- User-data installs Python API (Flask)
+- Runs server on **port 8080**
 
-Scheme: Internet-facing
+---
 
-Listener: HTTP 80
+## 8️⃣ **Auto Scaling Group**
+- Min: **1**
+- Max: **2**
+- Desired: **1**
+- Uses private subnets only
+- Connected to Target Group
 
-Target Group health check: /health
+---
 
-7. Target Group
+## 9️⃣ **Application Load Balancer**
+- Internet-facing
+- Listener: HTTP 80
+- Target Group:
+  - Health endpoint: `/health`
+  - Type: Instance
+  - Protocol: HTTP 8080
 
-Type: Instance
+---
 
-Port: 8080
+# 🧪 **REST API Testing**
 
-Protocol: HTTP
+After deployment:
 
-Health check: /health
+### Test main endpoint  
+curl http://<ALB-DNS>
 
-Status: healthy
+php
+Copy code
 
-Screenshot shows instance registered & healthy.
+> Output:  
+`Hello from private EC2!`
 
-8. Launch Template
+### Test health endpoint  
+curl http://<ALB-DNS>/health
 
-AMI: Amazon Linux 2
+yaml
+Copy code
 
-Instance type: t2.micro
+> Output:  
+`ok`
 
-User-data installs Python app and starts server on port 8080
+---
 
-9. Auto Scaling Group
+# 📸 **Screenshots Included**
+(Your repo should include these)
 
-Min: 1
+- ✔️ VPC  
+- ✔️ Subnets (public + private)  
+- ✔️ Route Tables  
+- ✔️ NAT Gateway  
+- ✔️ ALB configuration  
+- ✔️ Target Group health check  
+- ✔️ ASG details  
+- ✔️ API test output (curl screenshot)  
 
-Max: 2
+---
 
-Desired: 1
-
-Subnets: private subnets only
-
-REST API (My App)
-
-Runs on port 8080 with two endpoints:
-
-/
-
-Returns:
-
-Hello from private EC2!
-
-/health
-
-Returns:
-
-ok
-
-
-Both tested using ALB DNS and confirmed with 200 responses (screenshot provided).
-
-One-Click Deploy
-
-From the terraform/ folder:
-
+# ▶️ **How to Deploy (One-Click)**
 terraform init
 terraform apply -auto-approve
 
+yaml
+Copy code
 
-This command provisions:
+---
 
-✔ VPC
-✔ Subnets
-✔ NAT
-✔ IGW
-✔ Route tables
-✔ ALB
-✔ Target Group
-✔ Launch Template
-✔ ASG
-✔ IAM role
-✔ Security Groups
-✔ EC2 (private)
-✔ Health checks
-✔ Fully running API
-
-Testing the Deployment
-
-After apply, run:
-
-terraform output alb_dns
-
-
-Example result:
-
-oneclick-devops-alb-1749141582.us-east-1.elb.amazonaws.com
-
-
-Test endpoints:
-
-curl http://<ALB_DNS>/
-curl http://<ALB_DNS>/health
-
-
-Output:
-
-Hello from private EC2!
-ok
-
-
-(Screenshots match exactly.)
-
-Teardown
-
-To avoid AWS charges:
-
+# 🧹 **Teardown (Destroy Everything)**
 terraform destroy -auto-approve
 
+yaml
+Copy code
 
-This destroys NAT, ALB, ASG, EC2, VPC, all resources.
+---
 
-Project Structure
+# 📂 **Repository Structure**
+
 one-click-deployment/
 │
-├── terraform/
-│   ├── provider.tf
-│   ├── vpc.tf
-│   ├── subnets.tf
-│   ├── nat.tf
-│   ├── security.tf
-│   ├── alb.tf
-│   ├── launch_template_asg.tf
-│   ├── outputs.tf
-│   └── variables.tf
-│
-├── app/
-│   └── server.py
-│
-└── scripts/
-    ├── deploy.sh
-    └── destroy.sh
-✔ ASG
-✔ API test: /
-✔ API test: /health
+├── terraform/ # All IaC code
+├── app/ # REST API source code
+├── scripts/
+│ ├── deploy.sh
+│ ├── destroy.sh
+│ └── test.sh # (optional)
+└── README.md
+
+yaml
+Copy code
+
+---
