@@ -163,11 +163,11 @@ terraform destroy -auto-approve
 one-click-deployment/
 │
 ├── terraform/ # All IaC code
-├── app/ # REST API source code
+├── app/ 
 ├── scripts/
 │ ├── deploy.sh
 │ ├── destroy.sh
-│ └── test.sh # (optional)
+│ └── test.sh
 └── README.md
 ```
 
