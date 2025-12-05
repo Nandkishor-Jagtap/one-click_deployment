@@ -129,19 +129,6 @@ curl http://<ALB-DNS>/health
 > Output:  
 `ok`
 
----
-
-# 📸 **Screenshots Included**
-(Your repo should include these)
-
-- ✔️ VPC  
-- ✔️ Subnets (public + private)  
-- ✔️ Route Tables  
-- ✔️ NAT Gateway  
-- ✔️ ALB configuration  
-- ✔️ Target Group health check  
-- ✔️ ASG details  
-- ✔️ API test output (curl screenshot)  
 
 ---
 
