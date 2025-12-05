@@ -22,16 +22,14 @@ NAT Gateway (egress)
 ↓
 Internet Gateway
 
-yaml
-Copy code
-
+```
 ### ✔️ 2 public subnets  
 ### ✔️ 2 private subnets  
 ### ✔️ Public ALB  
 ### ✔️ Private ASG  
 ### ✔️ NAT for outbound internet  
 ### ✔️ NO public EC2 instances  
-```
+
 ---
 
 # 🛠️ **Components I Created**
@@ -121,17 +119,12 @@ After deployment:
 ### Test main endpoint  
 curl http://<ALB-DNS>
 
-php
-Copy code
 
 > Output:  
 `Hello from private EC2!`
 
 ### Test health endpoint  
 curl http://<ALB-DNS>/health
-
-yaml
-Copy code
 
 > Output:  
 `ok`
@@ -156,16 +149,12 @@ Copy code
 terraform init
 terraform apply -auto-approve
 
-yaml
-Copy code
 
 ---
 
 # 🧹 **Teardown (Destroy Everything)**
 terraform destroy -auto-approve
 
-yaml
-Copy code
 
 ---
 
